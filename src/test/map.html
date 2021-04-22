@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+<div id="container" style="height: 100%"></div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
+<script type="text/javascript">
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom);
+    var app = {};
+    var convertData = function (data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+            var geoCoord = geoCoordMap[data[i].name];
+            if (geoCoord) {
+                res.push(geoCoord.concat(data[i].value));
+            }
+        }
+        return res;
+    };
+    //经纬度
+    var geoCoordMap = {
+        "青岛": [120.33, 36.07],
+        "上海": [121.48, 31.22],
+        "南宁": [108.33, 22.84],
+        "成都": [104.06, 30.67],
+        "西安": [108.95, 34.27],
+        "杭州": [120.19, 30.26],
+        "淄博": [118.05, 36.78],
+        "济南": [117, 36.65]
+    };
+    var demoData = convertData([
+        {name: "青岛", value: 59},
+        {name: "上海", value: 89},
+        {name: "南宁", value: 109},
+        {name: "成都", value: 129},
+        {name: "西安", value: 159},
+        {name: "杭州", value: 189},
+        {name: "淄博", value: 269},
+        {name: "济南", value: 280}
+    ]);
+
+
+    option = {
+        backgroundColor: '#404a59',
+        title: {
+            text: '全国主要城市空气质量',
+            left: 'center',
+            textStyle: {
+                color: '#fff'
+            }
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            top: 'bottom',
+            left: 'right',
+            data: ['pm2.5'],
+            textStyle: {
+                color: '#fff'
+            }
+        },
+        visualMap: {
+            min: 0,
+            max: 300,
+            splitNumber: 5,
+            color: ['#d94e5d', '#eac736', '#50a3ba'],
+            textStyle: {
+                color: '#fff'
+            }
+        },
+        geo: {
+            map: 'china',
+            label: {
+                emphasis: {
+                    show: false
+                }
+            },
+            itemStyle: {
+                normal: {
+                    areaColor: '#323c48',
+                    borderColor: '#111'
+                },
+                emphasis: {
+                    areaColor: '#2a333d'
+                }
+            }
+        },
+        series: [
+            {
+                name: 'pm2.5',
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                data: demoData,
+                symbolSize: function (val) {
+                    //60一档
+                    var level = Math.ceil(val[2] / 60);
+                    return 15 + level * 5;
+                },
+                label: {
+                    normal: {
+                        show: false
+                    },
+                    emphasis: {
+                        show: false
+                    }
+                },
+                itemStyle: {
+                    emphasis: {
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }
+                }
+            },
+            {
+                name: 'Top3',
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                //筛选出前面5个点，然后进行对其增加涟漪特效
+                data: demoData.sort(function (a, b) {
+                    return b[2] - a[2];
+                }).slice(0, 5),
+                symbolSize: function (val) {
+                    var level = Math.ceil(val[2] / 60);
+                    return 5 + level * 5;
+                },
+                showEffectOn: 'render',
+                rippleEffect: {
+                    brushType: 'stroke'
+                }
+            }
+        ]
+    };
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+</script>
+</body>
+</html>
