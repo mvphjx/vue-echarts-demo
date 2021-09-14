@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <style>
+        #app {
+            height: 400px;
+        }
+    </style>
+</head>
+<title>vue-echarts</title>
+<body>
+<div id="app">
+    <v-chart autoresize :option="option"/>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.0.9"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.0.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-echarts@6.0.0-rc.4"></script>
+<script>
+    Vue.createApp({
+        data() {
+            return {
+                option : {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {
+                        data: ["本省","外省","未知"]
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'value'
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: ['北京', '河北']
+                    },
+                    series: [
+                        {
+                            name: '本省',
+                            type: 'bar',
+                            stack: 'total',
+                            label: {
+                                show: true
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: [320, 302]
+                        },
+                        {
+                            name: '外省',
+                            type: 'bar',
+                            stack: 'total',
+                            label: {
+                                show: true
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: [120, 132]
+                        },
+                        {
+                            name: '未知',
+                            type: 'bar',
+                            stack: 'total',
+                            label: {
+                                show: true
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: [220, 182]
+                        }
+                    ]
+                }
+            };
+        }
+    }).component("v-chart", VueECharts).mount("#app");
+</script>
+</body>
+</html>
