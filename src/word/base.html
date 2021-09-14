@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <style>
+        #app {
+            height: 400px;
+        }
+    </style>
+</head>
+<title>word-cloud-基础版</title>
+<body>
+<div id="app">
+</div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@3.2.2/dist/echarts.min.js"></script>
+<script src="https://ecomfe.github.io/echarts-wordcloud/dist/echarts-wordcloud.min.js"></script>
+
+<script>
+    var wordList = [
+        {
+            name: '本质思维',
+            value: 0,
+        },
+        {
+            name: '相对思维',
+            value: 0,
+        },
+        {
+            name: '抽象思维',
+            value: 0,
+        },
+        {
+            name: '系统思维',
+            value: 0,
+        },
+        {
+            name: '演化思维',
+            value: 0,
+        }
+    ];
+    var chart = echarts.init(document.getElementById('app'));
+    var option = {
+        series: [ {
+            type: 'wordCloud',
+            sizeRange: [50, 100],
+            rotationRange: [-30,30],
+            rotationStep: 45,
+            gridSize: 2,
+            shape: 'pentagon',
+            //maskImage: maskImage,
+            textStyle: {
+                normal: {
+                    color: function () {
+                        return 'rgb(' + [
+                            Math.round(Math.random() * 160),
+                            Math.round(Math.random() * 160),
+                            Math.round(Math.random() * 160)
+                        ].join(',') + ')';
+                    }
+                }
+            },
+            data: wordList
+        } ]
+    };
+    chart.setOption(option);
+</script>
+</body>
+</html>

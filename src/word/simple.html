@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <style>
+        #app {
+            height: 400px;
+        }
+    </style>
+</head>
+<title>vue-echarts</title>
+<body>
+<div id="app">
+    <v-chart autoresize :option="option"/>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.0.9"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.0.2"></script>
+<script src="https://ecomfe.github.io/echarts-wordcloud/dist/echarts-wordcloud.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-echarts@6.0.0-rc.4"></script>
+
+<script>
+    JosnList = [
+        {
+            name: '本质思维',
+            value: 500,
+        },
+        {
+            name: '相对思维',
+            value: 501,
+        },
+        {
+            name: '抽象思维',
+            value: 502,
+        },
+        {
+            name: '系统思维',
+            value: 503,
+        },
+        {
+            name: '演化思维',
+            value: 504,
+        }
+    ];
+
+    Vue.createApp({
+        data() {
+            return {
+
+                option: {
+                    tooltip: {
+                        show: true,
+                        // formatter: (params) => {
+                        //     const { name, value } = params;
+                        //     return `${name}:${value}`;
+                        // },
+                    },
+
+                    series: [
+                        {
+                            type: 'wordCloud',
+                            //size: ['9%', '99%'],
+                            sizeRange: [14, 50],
+                            //textRotation: [0, 45, 90, -45],
+                            rotationRange: [-45, 90],
+                            shape: 'circle',
+                            textPadding: 0,
+                            width: '80%',
+                            // 画布高
+                            height: '80%',
+                            autoSize: {
+                                enable: true,
+                                minSize: 6,
+                            },
+                            textStyle: {
+                                normal: {
+                                    color: function () {
+                                        return (
+                                            'rgb(' +
+                                            [Math.round(Math.random() * 256), Math.round(Math.random() * 256), Math.round(Math.random() * 256)].join(
+                                                ','
+                                            ) +
+                                            ')'
+                                        );
+                                    },
+                                },
+                                emphasis: {
+                                    shadowBlur: 2,
+                                    shadowColor: '#333',
+                                },
+                            },
+                            data: JosnList,
+                        },
+                    ],
+                }
+            };
+        }
+    }).component("v-chart", VueECharts).mount("#app");
+</script>
+</body>
+</html>
