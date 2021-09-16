@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app" style="height: 500px">
+    <v-chart autoresize :option="option"/>
+</div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@3.0.9"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.0.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-echarts@6.0.0-rc.4"></script>
+<script>
+    var count = 70;
+    var intervalCount = 67;
+    var baseTop = 70;
+    var gridHeight = 60;
+
+    var data = {
+        cpu: [],
+        memory: [],
+        frame: [],
+        main: [],
+        fake: [],
+        xMin: 0,
+        xMax: count * 1000
+    };
+
+    for (var i = 0; i < count; i++) {
+        var now = i * 1000;
+        data.cpu.push([now, Math.floor(Math.random() * 1000)]);
+        data.memory.push([now, Math.floor(Math.random() * 1000)]);
+        data.frame.push([now, Math.floor(Math.random() * 1000)]);
+        data.fake.push([now, 1]);
+    }
+
+    var ends = [];
+    for (var i = 0; i < intervalCount; i++) {
+        ends.push(Math.floor(Math.random() * count * 1000));
+    }
+    ends.sort(function (a, b) {
+        return a - b;
+    });
+
+    for (var i = 1; i < ends.length; i++) {
+        !(i % 2) && data.main.push([{
+            xAxis: ends[i - 1]
+        }, {
+            xAxis: ends[i]
+        }]);
+    }
+
+
+    function makeXAxis(gridIndex, opt) {
+        return echarts.util.merge({
+            type: 'time',
+            gridIndex: gridIndex,
+            axisLine: {onZero: false, lineStyle: {color: '#ddd'}},
+            axisTick: {show: false},
+            axisLabel: {show: false},
+            splitLine: {show: false, lineStyle: {color: '#ddd'}},
+            min: data.xMin,
+            max: data.xMax,
+            axisPointer: {
+                lineStyle: {color: 'transparent'}
+            }
+        }, opt || {}, true);
+    }
+
+    function makeYAxis(gridIndex, opt) {
+        return echarts.util.merge({
+            type: 'value',
+            gridIndex: gridIndex,
+            nameLocation: 'middle',
+            nameTextStyle: {
+                color: '#333'
+            },
+            boundaryGap: ['30%', '30%'],
+            axisTick: {show: false},
+            axisLine: {lineStyle: {color: '#ccc'}},
+            axisLabel: {show: false},
+            splitLine: {show: false}
+        }, opt || {}, true);
+    }
+
+    function makeGrid(top, opt) {
+        return echarts.util.merge({
+            top: top,
+            height: gridHeight
+        }, opt || {}, true);
+    }
+
+    option = {
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: '#fff',
+            borderColor: 'rgba(0, 0, 200, 0.2)',
+            borderWidth: 1,
+            borderRadius: 0,
+            padding: 10,
+            formatter: function (params) {
+                if (params.length) {
+                    params.unshift({
+                        seriesName: 'time',
+                        value: [null, Math.floor(params[0].value[0]) + ' ms'],
+                        color: '#5193f2'
+                    })
+                    return echarts.util.map(['time', 'cpu', 'memory', 'frame'], function (seriesName) {
+                        for (var i = 0; i < params.length; i++) {
+                            var param = params[i];
+                            var style = 'color: ' + param.color;
+                            if (param.seriesName === seriesName) {
+                                return '<span style="' + style + '">'
+                                    + param.seriesName
+                                    + '：</span><span style="'
+                                    + style + '">' + param.value[1] + '</span>';
+                            }
+                        }
+                    }).join('<br>');
+                }
+            }
+        },
+        title: {
+            text: 'Server',
+            left: 'center'
+        },
+        axisPointer: {
+            link: [{xAxisIndex: 'all'}],
+            snap: true
+        },
+        grid: [
+            makeGrid(baseTop)
+        ],
+        xAxis: [
+            makeXAxis(0),
+            makeXAxis(4, {
+                position: 'top',
+                axisLine: {show: false, onZero: false},
+                splitLine: {show: true},
+                axisLabel: {show: true, textStyle: {color: '#f00303'}},
+                axisPointer: {
+                    show: true,
+                    lineStyle: {
+                        color: '#478cf1',
+                        width: 1.5
+                    }
+                }
+            })
+        ],
+        yAxis: [
+            makeYAxis(0, {
+                name: 'Server1'
+            })
+        ],
+        series: [{
+            name: 'cpu',
+            type: 'line',
+            symbol: 'circle',
+            symbolSize: 2,
+            itemStyle: {
+                normal: {
+                    color: '#5193f2'
+                }
+            },
+            data: data.cpu
+        }]
+    };
+
+
+    Vue.createApp({
+        data: function () {
+            return {option: option}
+        }
+    }).component("v-chart", VueECharts).mount("#app");
+
+</script>
+</html>

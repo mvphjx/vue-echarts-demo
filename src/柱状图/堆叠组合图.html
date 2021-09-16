@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <style>
+        #app {
+            height: 400px;
+        }
+    </style>
+</head>
+<title>vue-echarts</title>
+<body>
+<div id="app">
+    <v-chart autoresize :option="option"/>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.0.9"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.0.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-echarts@6.0.0-rc.4"></script>
+<script>
+    var data = [
+        {
+            "text": "北京",
+            "code": "110000",
+            "count": 500,
+            "count_provice": 300,
+            "count_other": 100,
+            "count_unkown": 100,
+        },
+        {
+            "text": "山东",
+            "code": "370000",
+            "count": 800,
+            "count_provice": 300,
+            "count_other": 100,
+            "count_unkown": 400,
+        }
+    ]
+    var option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ["数据总量", "本省", "外省", "未知"]
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value'
+        },
+        yAxis: {
+            type: 'category',
+            data: ['北京', '河北']
+        },
+        series: [
+            {
+                name: '数据总量',
+                type: 'bar',
+                data: [500, 600]
+            },
+            {
+                name: '本省',
+                type: 'bar',
+                stack: 'total',
+                data: [300, 300]
+            },
+            {
+                name: '外省',
+                type: 'bar',
+                stack: 'total',
+                data: [120, 150]
+            },
+            {
+                name: '未知',
+                type: 'bar',
+                stack: 'total',
+                data: [80, 150]
+            }
+
+        ]
+    }
+    /**
+     * 统计数据转化
+     */
+    option.yAxis.data = [];
+    option.series[0].data = [];
+    option.series[1].data = [];
+    option.series[2].data = [];
+    option.series[3].data = [];
+    var maxValue = 0;
+    data.forEach(value => {
+        if (value.count > maxValue) {
+            maxValue = value.count;
+        }
+    })
+    data.forEach((model, index) => {
+        option.yAxis.data.push(model.text);
+        option.series[0].data.push(model.count);
+        //第二个柱状图 长度相同，主要用来分析构成
+        option.series[1].data.push(model.count_provice / model.count * maxValue);
+        option.series[2].data.push(model.count_other / model.count * maxValue);
+        option.series[3].data.push(model.count_unkown / model.count * maxValue);
+    })
+    Vue.createApp({
+        data() {
+            return {
+                option: option
+            };
+        }
+    }).component("v-chart", VueECharts).mount("#app");
+</script>
+</body>
+</html>
