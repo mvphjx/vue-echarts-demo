@@ -11,39 +11,49 @@
 <title>vue-echarts</title>
 <body>
 <div id="app">
-    <v-chart autoresize :option="option"/>
+    <input type="button" @click="change" value="change"/>
+    <v-chart autoresize :option="option" ref="vChart"/>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue@3.0.9"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.0.2"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-echarts@6.0.0-rc.4"></script>
 <script>
+    var data = [320, 302]
+    var option = {
+        xAxis: {
+            type: 'value'
+        },
+        yAxis: {
+            type: 'category',
+            data: ['北京', '河北']
+        },
+        series: [
+            {
+                name: 'XXX',
+                type: 'bar',
+                stack: 'total',
+                label: {
+                    show: true
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                data
+            }
+        ]
+    }
     Vue.createApp({
         data() {
             return {
-                option : {
-                    xAxis: {
-                        type: 'value'
-                    },
-                    yAxis: {
-                        type: 'category',
-                        data: ['北京', '河北']
-                    },
-                    series: [
-                        {
-                            name: 'XXX',
-                            type: 'bar',
-                            stack: 'total',
-                            label: {
-                                show: true
-                            },
-                            emphasis: {
-                                focus: 'series'
-                            },
-                            data: [320, 302]
-                        }
-                    ]
-                }
+                option
             };
+        },
+        methods: {
+            change() {
+                data[0]=data[0]/2
+                this.$refs.vChart.setOption(option);
+
+            }
         }
     }).component("v-chart", VueECharts).mount("#app");
 </script>
