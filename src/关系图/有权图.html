@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>人员关系图</title>
+<head>
+    <style>
+        #app {
+            height: 400px;
+        }
+    </style>
+</head>
+<title>vue-echarts</title>
+<body>
+<div id="app">
+    <input type="button" @click="change" value="change"/>
+    <v-chart autoresize :option="option" ref="vChart"/>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.0.9"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.0.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-echarts@6.0.0-rc.4"></script>
+<script>
+
+    var data = [{"id": "you", "name": "you", "label": {"show": true}}, {
+        "id": "bob",
+        "name": "bob",
+        "label": {"show": true}
+    }, {"id": "alice", "name": "alice", "label": {"show": true}}, {
+        "id": "claire",
+        "name": "claire",
+        "label": {"show": true}
+    }, {"id": "anuj", "name": "anuj", "label": {"show": true}}, {
+        "id": "peggy",
+        "name": "peggy",
+        "label": {"show": true}
+    }, {"id": "thom", "name": "thom", "label": {"show": true}}, {
+        "id": "jonny",
+        "name": "jonny",
+        "label": {"show": true}
+    }];
+    data[0].itemStyle = {
+        color: 'green'
+    };
+    var links = [{"source": "you", "target": "alice"}, {"source": "you", "target": "bob"}, {
+        "source": "you",
+        "target": "claire"
+    }, {"source": "bob", "target": "anuj"}, {"source": "bob", "target": "peggy"}, {
+        "source": "alice",
+        "target": "peggy"
+    }, {"source": "claire", "target": "thom"}, {"source": "claire", "target": "jonny"}];
+    links[0].value = 10;
+    links[0].label = {
+        "show": true, formatter: function () {
+            console.log(arguments);
+            return arguments[0].value;
+        }
+    };
+    links[0].lineStyle = {
+        color: 'red',
+        width: 2
+    };
+
+
+    var option = {
+        tooltip: {},
+        legend: [{}],
+        series: [{
+            type: "graph",
+            layout: "force",
+            symbol: "circle",//图形 'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow'
+            symbolSize: 30,//标记的大小，可以设置成诸如 10 这样单一的数字，也可以用数组分开表示宽和高，例如 [20, 10] 表示标记宽为20，高为10。
+            data,
+            links,
+            force: {//力引导布局相关的配置项
+                layoutAnimation: true,
+                repulsion: 500,
+            },
+        }]
+    }
+
+
+    Vue.createApp({
+        data() {
+            return {
+                option
+            };
+        },
+        methods: {
+            change() {
+                if (data[0].itemStyle.color == 'red') {
+                    data[0].itemStyle.color = "green"
+                } else {
+                    data[0].itemStyle.color = "red";
+                }
+                var _option = {
+                    series: [{
+                        data
+                    }]
+                }
+                this.$refs.vChart.setOption(_option);
+
+            }
+        }
+    }).component("v-chart", VueECharts).mount("#app");
+</script>
+</body>
+</html>
